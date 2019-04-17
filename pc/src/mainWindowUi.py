@@ -14,18 +14,17 @@ class MainWindowUi(QMainWindow, QWidget):
         """初始化主窗口"""
         self.setupUi()
         self.setupLayout()
-        # self.connectSignalSlot()
         
     def setupUi(self):
         """初始化主窗口Ui"""
         self.createButton()
         self.createImageLabel()
-        self.createDetectResultLabel()
+        self.createSaveFrameLabel()
 
     def showUi(self):
         """显示主窗口"""
         self.show()
-        self.setWindowIcon(QIcon("./icon/cloud.png"))
+        self.setWindowIcon(QIcon("./icon/rpi.png"))
         
     def createButton(self):
         """创建按钮"""
@@ -59,16 +58,15 @@ class MainWindowUi(QMainWindow, QWidget):
         self.resultImageLabel = QLabel(self)
         if self.resultImage.load("./icon/blank_256x128.jpg"):
             self.resultImageLabel.setPixmap(QPixmap.fromImage(self.resultImage))
+
+    def createSaveFrameLabel(self):
+        """创建保存图像标签"""    
         
-    def createDetectResultLabel(self): 
-        """创建计算结果标签"""
-        self.calcResultButton = QPushButton("计算污染等级", self)
-        self.autoCalcButton = QRadioButton('视频自动计算',  self)  
-        # self.autoCalcButton.setFocusPolicy(Qt.NoFocus)
-        self.resultNumLabel = QLabel("熵",self)
-        self.resultNumLineEdit = QLineEdit(self)
-        self.resultTextLabel = QLabel("污染等级",self)
-        self.resultTextLineEdit = QLineEdit(self)
+        self.savePathLabel = QLabel("保存路径",self)
+        self.savePathLineEdit = QLineEdit(self)
+        self.savePathLineEdit.setText("C:/rpi_save")
+        self.autoSaveButton = QRadioButton('视频帧自动保存', self) 
+        
        
     def setupLayout(self):
         """初始化布局"""
@@ -76,8 +74,7 @@ class MainWindowUi(QMainWindow, QWidget):
         self.createGroupBox_For_Video()
         self.createGroupBox_For_LocalCamera()
         self.createGroupBox_For_ImageToShow()
-        self.createGroupBox_For_DetectResult()
-        self.createGroupBox_For_resultImage()
+        self.createGroupBox_For_SaveFrame()
         self.createGroupBox_For_WebCamera()
 
         leftSideLayout = QVBoxLayout() 
@@ -88,8 +85,7 @@ class MainWindowUi(QMainWindow, QWidget):
         leftSideLayout.addStretch()# 在最后一个控件之后添加伸缩，这样所有的控件就会居上显示
          
         rightSideLayout = QVBoxLayout()
-        rightSideLayout.addWidget(self.detectResultGroupBox)
-        rightSideLayout.addWidget(self.resultImageGroupBox)
+        rightSideLayout.addWidget(self.saveFrameGroupBox)
         rightSideLayout.addStretch() 
          
          
@@ -144,8 +140,6 @@ class MainWindowUi(QMainWindow, QWidget):
         layout.addWidget(self.closeWebCameraButton)
         self.webCameraGroupBox.setLayout(layout)  
         
-        
-        
 
     def createGroupBox_For_ImageToShow(self):
         """图像的GroupBox"""
@@ -155,26 +149,16 @@ class MainWindowUi(QMainWindow, QWidget):
         layout.addWidget(self.imageToShowLabel)
         self.imageToShowGroupBox.setLayout(layout)  
         
-    def createGroupBox_For_resultImage(self):
+    def createGroupBox_For_SaveFrame(self):
         """检测结果图像的GroupBox"""
-        self.resultImageGroupBox = QGroupBox("resultImage")
+        self.saveFrameGroupBox = QGroupBox("saveFrame")
         layout = QVBoxLayout()
         layout.setSpacing(10) 
-        layout.addWidget(self.resultImageLabel)
-        self.resultImageGroupBox.setLayout(layout)     
-        
-    def createGroupBox_For_DetectResult(self):
-        """计算结果的GroupBox"""
-        self.detectResultGroupBox = QGroupBox("detectResult")
-        layout = QVBoxLayout()
-        layout.setSpacing(10) 
-        layout.addWidget(self.calcResultButton)
-        layout.addWidget(self.autoCalcButton)
-        layout.addWidget(self.resultNumLabel)
-        layout.addWidget(self.resultNumLineEdit)
-        layout.addWidget(self.resultTextLabel)
-        layout.addWidget(self.resultTextLineEdit)
-        self.detectResultGroupBox.setLayout(layout)    
+        layout.addWidget(self.savePathLabel)
+        layout.addWidget(self.savePathLineEdit)
+        layout.addWidget(self.autoSaveButton)
+        self.saveFrameGroupBox.setLayout(layout)     
+          
 
 
 

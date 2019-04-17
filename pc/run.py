@@ -10,7 +10,7 @@ import numpy as np
 
 """main"""
 app = QApplication(sys.argv)
-app.setApplicationName("树莓派视频传输")
+app.setApplicationName("树莓派视频传输上位机")
 app.setQuitOnLastWindowClosed(True)
 
 from src import *
@@ -27,7 +27,7 @@ class MainWindow(QMainWindow, QWidget):
     def __init__(self):
         super().__init__()  
         self.imageArray = np.array([]) # 存储图像的矩阵
-        self.calcDetectResultThreadRunning = 0 # 为1,线程正在运行
+        # self.calcDetectResultThreadRunning = 0 # 为1,线程正在运行
         self.ui = mainWindowUi.MainWindowUi()
         self.connectSignalSlot()
         self.ui.showUi()
@@ -37,7 +37,7 @@ class MainWindow(QMainWindow, QWidget):
         self.ui.openAFrameImageButton.clicked.connect(self.openAFrameImage) 
         self.ui.openVideoButton.clicked.connect(self.openVideo) 
         self.ui.closeVideoButton.clicked.connect(self.closeVideo) 
-        self.ui.calcResultButton.clicked.connect(self.startCalcDetectResult) 
+        # self.ui.calcResultButton.clicked.connect(self.startCalcDetectResult) 
         self.ui.openLocalCameraButton.clicked.connect(self.openLocalCamera) 
         self.ui.openWebCameraButton.clicked.connect(self.openWebCamera) 
         self.ui.closeLocalCameraButton.clicked.connect(self.closeLocalCamera) 
