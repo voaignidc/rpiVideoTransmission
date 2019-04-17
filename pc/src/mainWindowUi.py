@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+import time
+ISOTIMEFORMAT = '%Y_%m_%d_%H_%M_%S'
+
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -64,7 +67,8 @@ class MainWindowUi(QMainWindow, QWidget):
         
         self.savePathLabel = QLabel("保存路径",self)
         self.savePathLineEdit = QLineEdit(self)
-        self.savePathLineEdit.setText("C:/rpi_save")
+        self.savePathLineEdit.setText("C:/rpi_save/cam1")
+        
         self.autoSaveButton = QRadioButton('视频帧自动保存', self) 
         
        
@@ -150,7 +154,7 @@ class MainWindowUi(QMainWindow, QWidget):
         self.imageToShowGroupBox.setLayout(layout)  
         
     def createGroupBox_For_SaveFrame(self):
-        """检测结果图像的GroupBox"""
+        """保存视频帧的GroupBox"""
         self.saveFrameGroupBox = QGroupBox("saveFrame")
         layout = QVBoxLayout()
         layout.setSpacing(10) 

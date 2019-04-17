@@ -17,7 +17,7 @@ class WebCameraSeverThread(QThread):
         self.imageArray = np.array([]) 
         self.imageQueue = queue.Queue(maxsize = 5) 
         self.imageArrayQueue = queue.Queue(maxsize = 5)
-        self.refreshImageArrayCounter = 280      
+        # self.refreshImageArrayCounter = 280      
         
         self.stopedFlag = False
         self.mutex = QMutex()
@@ -45,10 +45,12 @@ class WebCameraSeverThread(QThread):
                 self.imageArray = decimg
                 if self.imageArrayQueue.full():
                     self.imageArrayQueue.get()
-                self.refreshImageArrayCounter = self.refreshImageArrayCounter + 1
-                if self.refreshImageArrayCounter >= 300:
-                    self.refreshImageArrayCounter = 0
-                    self.refreshWebCameraImgArraySignal.emit()              
+                    
+                # self.refreshImageArrayCounter = self.refreshImageArrayCounter + 1
+                # if self.refreshImageArrayCounter >= 300:
+                    # self.refreshImageArrayCounter = 0
+                    # self.refreshWebCameraImgArraySignal.emit()   
+                    
                 self.imageArrayQueue.put(self.imageArray)   
                 cv2.cvtColor(decimg, cv2.COLOR_BGR2RGB, decimg)
                 self.image = QImage(decimg.data, 640, 480, 1920, QImage.Format_RGB888) 
@@ -57,6 +59,7 @@ class WebCameraSeverThread(QThread):
                 self.imageQueue.put(self.image)
                 if not self.stopedFlag:
                     self.refreshWebCameraImgSignal.emit() 
+                    self.refreshWebCameraImgArraySignal.emit()   
                 # print("成功接收图像")
                 # conn.send(b'Server has recieved messages!')
                 

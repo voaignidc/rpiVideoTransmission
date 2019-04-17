@@ -55,12 +55,13 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         sock.send(str(len(byteData)).encode('utf-8'))
         # Then send encoded image
         sock.send(byteData)
-    except BrokenPipeError:
+    # BrokenPipeError, ConnectionResetError
+    except:
         print('check your connection')
         sock.close()
         sock = try_connect(ip, port)
         
     rawCapture.truncate(0)
-    time.sleep(0.1)
+    # time.sleep(0.1)
 
 

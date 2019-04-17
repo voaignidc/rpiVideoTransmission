@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-import sys, os
+import sys, os, time
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -27,7 +27,8 @@ class MainWindow(QMainWindow, QWidget):
     def __init__(self):
         super().__init__()  
         self.imageArray = np.array([]) # 存储图像的矩阵
-        # self.calcDetectResultThreadRunning = 0 # 为1,线程正在运行
+        self.lastSavePath = '' # 上次保存图像的位置
+        self.lastSavePathCount = 0
         self.ui = mainWindowUi.MainWindowUi()
         self.connectSignalSlot()
         self.ui.showUi()
@@ -128,7 +129,7 @@ class MainWindow(QMainWindow, QWidget):
             print("连接此IP:", self.ui.webCameraIPLineEdit.text())
             self.webCameraSeverThread = webCamera.WebCameraSeverThread((self.ui.webCameraIPLineEdit.text(), int(self.ui.webCameraPortLineEdit.text()))) 
             self.webCameraSeverThread.refreshWebCameraImgSignal.connect(self.refreshWebCameraImage)
-            self.webCameraSeverThread.refreshWebCameraImgArraySignal.connect(self.refreshWebCameraImageArray)
+            self.webCameraSeverThread.refreshWebCameraImgArraySignal.connect(self.refreshWebCameraImageArrayAndSave)
             self.webCameraSeverThread.start()  
          
     def closeWebCamera(self):
@@ -148,36 +149,26 @@ class MainWindow(QMainWindow, QWidget):
             image = self.webCameraSeverThread.imageQueue.get()
             self.ui.imageToShowLabel.setPixmap(QPixmap.fromImage(image))
             
-    def refreshWebCameraImageArray(self):
-        """网络摄像头, 更新ImageArray,计算检测结果"""
-        if self.ui.autoCalcButton.isChecked(): 
+    def refreshWebCameraImageArrayAndSave(self):
+        """网络摄像头, 更新ImageArray, 并保存"""
+        if self.ui.autoSaveButton.isChecked(): 
             while not self.webCameraSeverThread.imageArrayQueue.empty():
-                self.imageArray = self.webCameraSeverThread.imageArrayQueue.get()    
-            self.startCalcDetectResult()    
-         
-    '''    
-    def startCalcDetectResult(self): 
-        """开始计算检测结果,建立一个新线程"""
-        print("开始计算检测结果")
-        if self.imageArray.size > 0 and (not self.calcDetectResultThreadRunning): # 图像矩阵非空
-            self.calcDetectResultThreadRunning = 1
-            self.calcDetectResultThread = detector.CalcDetectResultThread(self.imageArray)         
-            self.calcDetectResultThread.resultSignal.connect(self.refreshDetectResult)
-            self.calcDetectResultThread.start()        
-            
-    def refreshDetectResult(self, resultNums, resultClassify):
-        """更新检测结果"""
-        print("检测结果计算完毕")
-        self.calcDetectResultThreadRunning = 0
-        self.ui.resultNumLineEdit.setText(resultNums)
-        self.ui.resultTextLineEdit.setText(str(resultClassify))
+                self.imageArray = self.webCameraSeverThread.imageArrayQueue.get() 
+                # 保存
+                savePath = self.ui.savePathLineEdit.text() + '/' + \
+                           time.strftime('%Y%m%d%H%M%S', time.localtime()) 
+                if savePath == self.lastSavePath:
+                    self.lastSavePathCount += 1
+                else:
+                    self.lastSavePathCount = 0
+                self.lastSavePath = savePath    
+                savePath = savePath + '_' + str(self.lastSavePathCount) + '.png'     
+                print(savePath)
+                cv2.imwrite(savePath, self.imageArray)
         
-        if self.ui.resultImage.load("./icon/level" + str(resultClassify) + ".jpg"):
-            self.ui.resultImageLabel.setPixmap(QPixmap.fromImage(self.ui.resultImage))
-        
-    '''   
+
             
   
-"""主函数"""
+"""main"""
 window = MainWindow()
 sys.exit(app.exec_())
